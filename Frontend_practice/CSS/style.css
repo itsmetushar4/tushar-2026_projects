@@ -1,0 +1,21 @@
+
+p{
+    color: blue;
+}
+
+div{
+    border: 2px solid rgb(0, 0, 0);
+    margin: 10px;
+    padding-left: 10px;
+    background-image: url("download.jpg");
+    outline: 2px solid rgb(178, 131, 224);
+}
+.out{
+    text-shadow: 2px 2px rgb(245, 146, 146);
+    text-decoration: overline;
+    text-transform: none;
+    text-align: left;
+}
+.last{
+    word-spacing: 5px;
+}
