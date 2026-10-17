@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            max-width: 750px;
+            margin: 40px auto;
+            padding: 20px;
+            color: #222;
+        }
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 3px 15px #0000000d;
+            margin-bottom: 20px;
+        }
+        input, textarea, button {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 11px;
+            margin: 7px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font: inherit;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .filters a {
+            margin-right: 12px;
+            color: #2563eb;
+        }
+        .task {
+            border-bottom: 1px solid #eee;
+            padding: 12px 0;
+        }
+        .done {
+            text-decoration: line-through;
+            color: #888;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .actions form {
+            flex: 1;
+        }
+        .delete {
+            background: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <h1>My Todo App</h1>
+
+    <div class="card">
+        <h2>Add a task</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="title"
+                   placeholder="What needs to be done?" required>
+            <textarea name="description"
+                      placeholder="Description (optional)"></textarea>
+            <button type="submit">Add Task</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="filters">
+            <a href="?status=all">All</a>
+            <a href="?status=pending">Pending</a>
+            <a href="?status=completed">Completed</a>
+        </div>
+
+        <h2>Your tasks</h2>
+
+        {% for todo in todos %}
+            <div class="task">
+                <h3 class="{% if todo.completed %}done{% endif %}">
+                    {{ todo.title }}
+                </h3>
+                <p>{{ todo.description }}</p>
+                <small>{{ todo.created_at|date:"d M Y, H:i" }}</small>
+
+                <div class="actions">
+                    <form method="post"
+                          action="{% url 'toggle_todo' todo.pk %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            {% if todo.completed %}Mark Pending{% else %}Complete{% endif %}
+                        </button>
+                    </form>
+                    <form method="post"
+                          action="{% url 'delete_todo' todo.pk %}">
+                        {% csrf_token %}
+                        <button class="delete" type="submit">Delete</button>
+                    </form>
+                </div>
+            </div>
+        {% empty %}
+            <p>No tasks found. Add your first task above!</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
