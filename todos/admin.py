@@ -4,7 +4,7 @@ from .models import ToDO
 
 @admin.register(ToDO)
 class ToDOAdmin(admin.ModelAdmin):
-    list_display = ('title','completed','created_at','description')
+    list_display = ('title','completed','created_at','description','user')
     list_filter = ('completed',)
     search_fields = ('title','description')
 
