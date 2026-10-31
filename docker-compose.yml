@@ -33,7 +33,44 @@ services:
     depends_on:
       auth_db:
         condition: service_healthy
-    command: sh -c "python manage.py makemigrations accounts && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+
+  patient_db:
+    image: postgres:16
+    container_name: hms_patient_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${PATIENT_DB_USER}
+      POSTGRES_PASSWORD: ${PATIENT_DB_PASSWORD}
+      POSTGRES_DB: ${PATIENT_DB_NAME}
+    ports:
+      - "${PATIENT_DB_PORT:-5434}:5432"
+    volumes:
+      - patient_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PATIENT_DB_USER} -d ${PATIENT_DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  patient_service:
+    build: ./services/patient_service
+    container_name: hms_patient_service
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_HOST: patient_db
+      DB_PORT: 5432
+      DB_NAME: ${PATIENT_DB_NAME}
+      DB_USER: ${PATIENT_DB_USER}
+      DB_PASSWORD: ${PATIENT_DB_PASSWORD}
+    ports:
+      - "${PATIENT_SERVICE_PORT:-8002}:8000"
+    depends_on:
+      patient_db:
+        condition: service_healthy
+    command: sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
 volumes:
   auth_postgres_data:
+  patient_postgres_data:

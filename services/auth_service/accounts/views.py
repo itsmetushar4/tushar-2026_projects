@@ -1,7 +1,13 @@
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.serializers import ModelSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User
+from .serializers import HmsTokenObtainPairSerializer
+
+
+class HmsTokenObtainPairView(TokenObtainPairView):
+    serializer_class = HmsTokenObtainPairSerializer
 
 class MeSerializer(ModelSerializer):
     class Meta:
